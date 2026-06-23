@@ -1,0 +1,12 @@
+[package]
+name = "mayth"
+version = "0.0.1-alpha"
+description = "A general-purpose math library for Rust."
+license = "MIT"
+edition = "2024"
+repository = "https://github.com/kootfe/mayth"
+readme = "README.md"
+keywords = ["math", "vector", "matrix", "gamedev"]
+categories = ["math", "mathematics", "game-development"]
+
+[dependencies]
