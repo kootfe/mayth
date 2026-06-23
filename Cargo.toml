@@ -7,6 +7,6 @@ edition = "2024"
 repository = "https://github.com/kootfe/mayth"
 readme = "README.md"
 keywords = ["math", "vector", "matrix", "gamedev"]
-categories = ["math", "mathematics", "game-development"]
+categories = ["mathematics", "game-development"]
 
 [dependencies]
