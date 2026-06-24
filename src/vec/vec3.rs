@@ -5,8 +5,8 @@
 //!
 //! # Example
 //! ```
-//! use crate::vec3::Vec3;
-//! use crate::angle::Degrees;
+//! use mayth::vec3::Vec3;
+//! use mayth::angle::Degrees;
 //!
 //! let v = Vec3::new(1.0, 0.0, 0.0);
 //! let rotated = v.rotate(Vec3::new(0.0, 1.0, 0.0), Degrees(90.0));
