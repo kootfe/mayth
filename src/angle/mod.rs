@@ -6,7 +6,7 @@
 //!
 //! # Example
 //! ```
-//! use angle::{Degrees, Radians, Turns, Gradians};
+//! use mayth::angle::{Degrees, Radians, Turns, Gradians};
 //!
 //! let d = Degrees(180.0);
 //! let r: Radians = d.into();   // π

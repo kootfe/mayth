@@ -5,7 +5,7 @@
 //!
 //! # Example
 //! ```
-//! use mayth::vec3::Vec3;
+//! use mayth::vec::Vec3;
 //! use mayth::angle::Degrees;
 //!
 //! let v = Vec3::new(1.0, 0.0, 0.0);
@@ -227,9 +227,7 @@ impl Vec3 {
             return *self;
         }
         let axis = axis / axis_len_sq.sqrt();
-
         let Radians(theta) = angle.into();
-        let axis = axis.normalize();
         let (s, c) = theta.sin_cos();
         let v = self;
         v * c + axis.cross(v) * s + axis * (axis.dot(v) * (1.0 - c))
