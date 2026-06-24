@@ -1,7 +1,7 @@
 # v0.0.1-alpha.2
 - **Breaking:** Flattened module paths for `Vec2`, `Vec3`, and matrix types
   (e.g. `mayth::vec::vec3::Vec3` → `mayth::vec::Vec3`)
-- Added `Matrix4` (`mayth::matrix::Matrix4`)
+- Added `Matrix4` base (`mayth::matrix::Matrix4`)
 
 # v0.0.1-alpha.1
 - Added `Vec3` (`mayth::vec::vec3::Vec3`)

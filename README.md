@@ -54,7 +54,7 @@ All conversions are lossless and fully inter-compatible.
 
 * [x] Vec2
 * [x] Vec3
-* [ ] Matrix4 (in progress)
+* [x] Matrix4 (in progress)
 * [ ] Matrix3
 * [ ] Matrix2
 * [ ] Quaternions
