@@ -22,6 +22,7 @@ use std::f32::consts::{PI, TAU};
 ///
 /// # Example
 /// ```
+/// use mayth::angle::Radians;
 /// let r = Radians(std::f32::consts::PI); // 180°
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -33,6 +34,7 @@ pub struct Radians(pub f32);
 ///
 /// # Example
 /// ```
+/// use mayth::angle::Degrees;
 /// let d = Degrees(90.0); // quarter turn
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -44,6 +46,7 @@ pub struct Degrees(pub f32);
 ///
 /// # Example
 /// ```
+/// use mayth::angle::Turns;
 /// let t = Turns(0.25); // 90°
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -55,6 +58,7 @@ pub struct Turns(pub f32);
 ///
 /// # Example
 /// ```
+/// use mayth::angle::Gradians;
 /// let g = Gradians(100.0); // 90°
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]

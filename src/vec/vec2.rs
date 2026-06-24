@@ -163,6 +163,8 @@ impl Vec2 {
     ///
     /// # Example
     /// ```
+    /// use mayth::angle::Degrees;
+    /// use mayth::vec::Vec2;
     /// let right = Vec2::from_angle(Degrees(0.0));   // (1, 0)
     /// let up    = Vec2::from_angle(Degrees(90.0));  // (0, 1)
     /// ```

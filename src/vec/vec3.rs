@@ -195,6 +195,9 @@ impl Vec3 {
     /// # Example
     /// ```
     /// // Facing along +X with no tilt
+    /// use mayth::angle::Degrees;
+    /// use mayth::vec::Vec3;
+    ///
     /// let forward = Vec3::from_yaw_pitch(Degrees(0.0), Degrees(0.0));
     /// ```
     pub fn from_yaw_pitch(yaw: impl Into<Radians>, pitch: impl Into<Radians>) -> Self {
@@ -217,6 +220,9 @@ impl Vec3 {
     /// # Example
     /// ```
     /// // Rotate +X 90° around the Z-axis → +Y
+    /// use mayth::angle::Degrees;
+    /// use mayth::vec::Vec3;
+    ///
     /// let v = Vec3::new(1.0, 0.0, 0.0);
     /// let up = Vec3::new(0.0, 0.0, 1.0);
     /// let result = v.rotate(up, Degrees(90.0));
