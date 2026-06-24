@@ -5,8 +5,8 @@
 //!
 //! # Example
 //! ```
-//! use crate::vec2::Vec2;
-//! use crate::angle::Degrees;
+//! use mayth::vec::Vec2;
+//! use mayth::angle::Degrees;
 //!
 //! let v = Vec2::new(3.0, 4.0);
 //! assert_eq!(v.length(), 5.0);
