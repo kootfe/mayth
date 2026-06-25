@@ -2,14 +2,24 @@ use std::ops::{
     Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign,
 };
 
+use crate::simd::*;
 use crate::{angle::Radians, vec::Vec3};
 
+#[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct Matrix4 {
     pub cols: [[f32; 4]; 4],
 }
 
 impl Matrix4 {
+    fn as_flat(&self) -> &[f32] {
+        unsafe { std::slice::from_raw_parts(self.cols.as_ptr() as *const f32, 16) }
+    }
+
+    fn as_flat_mut(&mut self) -> &mut [f32] {
+        unsafe { std::slice::from_raw_parts_mut(self.cols.as_mut_ptr() as *mut f32, 16) }
+    }
+
     pub const IDENTITY: Matrix4 = Matrix4 {
         cols: [
             [1.0, 0.0, 0.0, 0.0],
@@ -115,16 +125,12 @@ impl Matrix4 {
 }
 
 macro_rules! impl_mat4_binop {
-    ($trait:ident, $method:ident, $op:tt) => {
+    ($trait:ident, $method:ident, $simd_fn:ident) => {
         impl $trait<Matrix4> for Matrix4 {
             type Output = Matrix4;
             fn $method(self, rhs: Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -132,11 +138,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: &Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -144,11 +146,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: &mut Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -156,11 +154,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -168,11 +162,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: &Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -180,11 +170,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: &mut Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -192,11 +178,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -204,11 +186,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: &Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -216,11 +194,7 @@ macro_rules! impl_mat4_binop {
             type Output = Matrix4;
             fn $method(self, rhs: &mut Matrix4) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
                 out
             }
         }
@@ -228,48 +202,32 @@ macro_rules! impl_mat4_binop {
 }
 
 macro_rules! impl_mat4_assignop {
-    ($trait:ident, $method:ident, $op:tt) => {
+    ($trait:ident, $method:ident, $simd_fn:ident) => {
         impl $trait<Matrix4> for Matrix4 {
             fn $method(&mut self, rhs: Matrix4) {
-                for c in 0..4 {
-                    for r in 0..4 {
-                        self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat_mut(), rhs.as_flat());
             }
         }
         impl $trait<&Matrix4> for Matrix4 {
             fn $method(&mut self, rhs: &Matrix4) {
-                for c in 0..4 {
-                    for r in 0..4 {
-                        self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat_mut(), rhs.as_flat());
             }
         }
         impl $trait<&mut Matrix4> for Matrix4 {
             fn $method(&mut self, rhs: &mut Matrix4) {
-                for c in 0..4 {
-                    for r in 0..4 {
-                        self.cols[c][r] $op rhs.cols[c][r];
-                    }
-                }
+                $simd_fn(self.as_flat_mut(), rhs.as_flat());
             }
         }
     };
 }
 
 macro_rules! impl_mat4_scalar {
-    ($trait:ident, $method:ident, $op:tt) => {
+    ($trait:ident, $method:ident, $simd_fn:ident) => {
         impl $trait<f32> for Matrix4 {
             type Output = Matrix4;
             fn $method(self, rhs: f32) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs;
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs, out.as_flat_mut());
                 out
             }
         }
@@ -277,11 +235,7 @@ macro_rules! impl_mat4_scalar {
             type Output = Matrix4;
             fn $method(self, rhs: f32) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs;
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs, out.as_flat_mut());
                 out
             }
         }
@@ -289,11 +243,7 @@ macro_rules! impl_mat4_scalar {
             type Output = Matrix4;
             fn $method(self, rhs: f32) -> Matrix4 {
                 let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = self.cols[c][r] $op rhs;
-                    }
-                }
+                $simd_fn(self.as_flat(), rhs, out.as_flat_mut());
                 out
             }
         }
@@ -301,14 +251,10 @@ macro_rules! impl_mat4_scalar {
 }
 
 macro_rules! impl_mat4_scalar_assign {
-    ($trait:ident, $method:ident, $op:tt) => {
+    ($trait:ident, $method:ident, $simd_fn:ident) => {
         impl $trait<f32> for Matrix4 {
             fn $method(&mut self, rhs: f32) {
-                for c in 0..4 {
-                    for r in 0..4 {
-                        self.cols[c][r] $op rhs;
-                    }
-                }
+                $simd_fn(self.as_flat_mut(), rhs);
             }
         }
     };
@@ -319,122 +265,120 @@ macro_rules! impl_mat4_neg {
         impl Neg for Matrix4 {
             type Output = Matrix4;
             fn neg(self) -> Matrix4 {
-                let mut out = Matrix4 {
-                    cols: [[0.0; 4]; 4],
-                };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = -self.cols[c][r];
-                    }
-                }
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                neg_f32_slice(self.as_flat(), out.as_flat_mut());
                 out
             }
         }
         impl Neg for &Matrix4 {
             type Output = Matrix4;
             fn neg(self) -> Matrix4 {
-                let mut out = Matrix4 {
-                    cols: [[0.0; 4]; 4],
-                };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = -self.cols[c][r];
-                    }
-                }
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                neg_f32_slice(self.as_flat(), out.as_flat_mut());
                 out
             }
         }
         impl Neg for &mut Matrix4 {
             type Output = Matrix4;
             fn neg(self) -> Matrix4 {
-                let mut out = Matrix4 {
-                    cols: [[0.0; 4]; 4],
-                };
-                for c in 0..4 {
-                    for r in 0..4 {
-                        out.cols[c][r] = -self.cols[c][r];
-                    }
-                }
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                neg_f32_slice(self.as_flat(), out.as_flat_mut());
                 out
             }
         }
     };
 }
 
-impl_mat4_binop!(Add, add, +);
-impl_mat4_binop!(Sub, sub, -);
-
-impl_mat4_assignop!(AddAssign, add_assign, +=);
-impl_mat4_assignop!(SubAssign, sub_assign, -=);
-
-impl_mat4_scalar!(Mul, mul, *);
-impl_mat4_scalar!(Div, div, /);
-
-impl_mat4_scalar_assign!(MulAssign, mul_assign, *=);
-impl_mat4_scalar_assign!(DivAssign, div_assign, /=);
-
-impl_mat4_neg!();
-
-//I hate this...
 macro_rules! impl_mat4_mul {
     () => {
         impl Mul<Matrix4> for Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(&self, &rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<&Matrix4> for Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: &Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(&self, rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<&mut Matrix4> for Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: &mut Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(&self, rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<Matrix4> for &Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(self, &rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<&Matrix4> for &Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: &Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(self, rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<&mut Matrix4> for &Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: &mut Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(self, rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<Matrix4> for &mut Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(self, &rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<&Matrix4> for &mut Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: &Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(self, rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
         impl Mul<&mut Matrix4> for &mut Matrix4 {
             type Output = Matrix4;
             fn mul(self, rhs: &mut Matrix4) -> Matrix4 {
-                Matrix4::mul_impl(self, rhs)
+                let mut out = Matrix4 { cols: [[0.0; 4]; 4] };
+                mat4_mul_f32_slices(self.as_flat(), rhs.as_flat(), out.as_flat_mut());
+                out
             }
         }
     };
 }
 
+impl_mat4_binop!(Add, add, add_f32_slices);
+impl_mat4_binop!(Sub, sub, sub_f32_slices);
+
+impl_mat4_assignop!(AddAssign, add_assign, add_assign_f32_slices);
+impl_mat4_assignop!(SubAssign, sub_assign, sub_assign_f32_slices);
+
+impl_mat4_scalar!(Mul, mul, mul_f32_slice_scalar);
+impl_mat4_scalar!(Div, div, div_f32_slice_scalar);
+
+impl_mat4_scalar_assign!(MulAssign, mul_assign, mul_assign_f32_slice_scalar);
+impl_mat4_scalar_assign!(DivAssign, div_assign, div_assign_f32_slice_scalar);
+
+impl_mat4_neg!();
 impl_mat4_mul!();
 
 impl Index<usize> for Matrix4 {

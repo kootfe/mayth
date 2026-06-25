@@ -54,10 +54,14 @@ All conversions are lossless and fully inter-compatible.
 
 * [x] Vec2
 * [x] Vec3
+* [x] SIMD (SSE2) (curretly just for Matrix4)
 * [x] Matrix4 (in progress)
 * [ ] Matrix3
 * [ ] Matrix2
 * [ ] Quaternions
+* [ ] SIMD (NEON)
+* [ ] SIMD (AVX2)
+* [ ] SIMD (RVV)
 
 ## Status
 

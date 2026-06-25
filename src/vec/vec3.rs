@@ -20,7 +20,7 @@ use crate::angle::Radians;
 ///
 /// Implements component-wise arithmetic with other [`Vec3`] values and
 /// uniform scaling by `f32`, in all reference combinations.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vec3 {
     /// Horizontal component.
     pub x: f32,
@@ -454,3 +454,35 @@ impl_vec3_scalar_assign!(DivAssign, div_assign, /=);
 
 // -Vec3
 impl_vec3_neg!();
+
+impl PartialEq for Vec3 {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.x != other.x || self.y != other.y || self.z != other.z
+    }
+}
+
+impl PartialOrd for Vec3 {
+    fn lt(&self, other: &Self) -> bool {
+        self.length_square() < other.length_square()
+    }
+
+    fn gt(&self, other: &Self) -> bool {
+        self.length_square() > other.length_square()
+    }
+
+    fn le(&self, other: &Self) -> bool {
+        self.length_square() <= other.length_square()
+    }
+
+    fn ge(&self, other: &Self) -> bool {
+        self.length_square() >= other.length_square()
+    }
+
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.length_square().partial_cmp(&other.length_square())
+    }
+}

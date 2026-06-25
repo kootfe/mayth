@@ -22,7 +22,7 @@ use crate::angle::Radians;
 ///
 /// Implements component-wise arithmetic with other [`Vec2`] values and
 /// uniform scaling by `f32`, in all reference combinations.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vec2 {
     /// Horizontal component.
     pub x: f32,
@@ -170,7 +170,10 @@ impl Vec2 {
     /// ```
     pub fn from_angle(angle: impl Into<Radians>) -> Self {
         let Radians(r) = angle.into();
-        Self { x: r.cos(), y: r.sin() }
+        Self {
+            x: r.cos(),
+            y: r.sin(),
+        }
     }
 
     /// Returns this vector rotated counter-clockwise by `angle`.
@@ -189,7 +192,10 @@ impl Vec2 {
     ///
     /// The result is rotated 90° counter-clockwise and has the same length as `self`.
     pub fn perp(&self) -> Self {
-        Self { x: -self.y, y: self.x }
+        Self {
+            x: -self.y,
+            y: self.x,
+        }
     }
 
     /// Linearly interpolates between `self` and `rhs` by factor `t`.
@@ -210,6 +216,21 @@ impl Vec2 {
             *self * (max / len_sq.sqrt())
         } else {
             *self
+        }
+    }
+
+    /// Returns a vector with the absolute value of each component.
+    ///
+    /// # Example
+    /// ```
+    /// use mayth::vec::Vec2;
+    /// let v = Vec2::new(-3.0, 4.0);
+    /// assert_eq!(v.abs(), Vec2::new(3.0, 4.0));
+    /// ```
+    pub fn abs(&self) -> Self {
+        Self {
+            x: self.x.abs(),
+            y: self.y.abs(),
         }
     }
 }
@@ -340,19 +361,28 @@ macro_rules! impl_vec2_neg {
         impl Neg for Vec2 {
             type Output = Vec2;
             fn neg(self) -> Vec2 {
-                Vec2 { x: -self.x, y: -self.y }
+                Vec2 {
+                    x: -self.x,
+                    y: -self.y,
+                }
             }
         }
         impl Neg for &Vec2 {
             type Output = Vec2;
             fn neg(self) -> Vec2 {
-                Vec2 { x: -self.x, y: -self.y }
+                Vec2 {
+                    x: -self.x,
+                    y: -self.y,
+                }
             }
         }
         impl Neg for &mut Vec2 {
             type Output = Vec2;
             fn neg(self) -> Vec2 {
-                Vec2 { x: -self.x, y: -self.y }
+                Vec2 {
+                    x: -self.x,
+                    y: -self.y,
+                }
             }
         }
     };
@@ -380,3 +410,114 @@ impl_vec2_scalar_assign!(DivAssign, div_assign, /=);
 
 // -Vec2
 impl_vec2_neg!();
+
+impl PartialEq for Vec2 {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.x != other.x || self.y != other.y
+    }
+}
+
+impl PartialOrd for Vec2 {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.length_square().partial_cmp(&other.length_square())
+    }
+
+    fn lt(&self, other: &Self) -> bool {
+        self.length_square() < other.length_square()
+    }
+
+    fn gt(&self, other: &Self) -> bool {
+        self.length_square() > other.length_square()
+    }
+
+    fn le(&self, other: &Self) -> bool {
+        self.length_square() <= other.length_square()
+    }
+
+    fn ge(&self, other: &Self) -> bool {
+        self.length_square() >= other.length_square()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn approx_eq(a: f32, b: f32) -> bool {
+        (a - b).abs() < 1e-6
+    }
+
+    #[test]
+    fn new_sets_components() {
+        let v = Vec2::new(3.0, 4.0);
+        assert_eq!(v.x, 3.0);
+        assert_eq!(v.y, 4.0);
+    }
+
+    #[test]
+    fn length_is_pythagorean() {
+        let v = Vec2::new(3.0, 4.0);
+        assert!(approx_eq(v.length(), 5.0)); // classic 3-4-5 triangle
+    }
+
+    #[test]
+    fn length_square_avoids_sqrt_but_matches() {
+        let v = Vec2::new(3.0, 4.0);
+        assert!(approx_eq(v.length_square(), 25.0));
+    }
+
+    #[test]
+    fn normalize_produces_unit_length() {
+        let v = Vec2::new(3.0, 4.0).normalize();
+        assert!(approx_eq(v.length(), 1.0));
+    }
+
+    #[test]
+    fn normalize_zero_vector_returns_zero() {
+        let v = Vec2::ZERO.normalize();
+        assert_eq!(v, Vec2::ZERO); // PartialEq is derived, exact 0.0 == 0.0 is fine here
+    }
+
+    #[test]
+    fn dot_of_perpendicular_vectors_is_zero() {
+        let a = Vec2::new(1.0, 0.0);
+        let b = Vec2::new(0.0, 1.0);
+        assert!(approx_eq(a.dot(&b), 0.0));
+    }
+
+    #[test]
+    fn rotate_90_degrees_maps_x_axis_to_y_axis() {
+        use crate::angle::Degrees;
+        let v = Vec2::new(1.0, 0.0);
+        let rotated = v.rotate(Degrees(90.0));
+        assert!(approx_eq(rotated.x, 0.0));
+        assert!(approx_eq(rotated.y, 1.0));
+    }
+
+    #[test]
+    fn lerp_at_t_zero_returns_self() {
+        let a = Vec2::new(0.0, 0.0);
+        let b = Vec2::new(10.0, 10.0);
+        let result = a.lerp(&b, 0.0);
+        assert_eq!(result, a);
+    }
+
+    #[test]
+    fn lerp_at_t_one_returns_other() {
+        let a = Vec2::new(0.0, 0.0);
+        let b = Vec2::new(10.0, 10.0);
+        let result = a.lerp(&b, 1.0);
+        assert_eq!(result, b);
+    }
+
+    #[test]
+    fn add_operator_sums_components() {
+        let a = Vec2::new(1.0, 2.0);
+        let b = Vec2::new(3.0, 4.0);
+        assert_eq!(a + b, Vec2::new(4.0, 6.0));
+    }
+}
