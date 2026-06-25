@@ -18,10 +18,15 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 
 use crate::angle::Radians;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 /// A 2-D vector with `f32` components.
 ///
 /// Implements component-wise arithmetic with other [`Vec2`] values and
 /// uniform scaling by `f32`, in all reference combinations.
+#[repr(C)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vec2 {
     /// Horizontal component.
@@ -421,6 +426,19 @@ impl PartialEq for Vec2 {
     }
 }
 
+/// Compares two vectors by their squared length (`x² + y²`).
+/// This means `v1 < v2` is true when `v1` is *shorter* than `v2`, regardless
+/// of direction. It does **not** perform a component-wise or lexicographic
+/// comparison.
+///
+/// # Example
+/// ```
+/// use mayth::vec::Vec2;
+///
+/// let short = Vec2::new(1.0, 0.0);
+/// let long  = Vec2::new(3.0, 0.0);
+/// assert!(short < long);
+/// ```
 impl PartialOrd for Vec2 {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         self.length_square().partial_cmp(&other.length_square())

@@ -16,10 +16,15 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 
 use crate::angle::Radians;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 /// A 3-D vector with `f32` components.
 ///
 /// Implements component-wise arithmetic with other [`Vec3`] values and
 /// uniform scaling by `f32`, in all reference combinations.
+#[repr(C)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vec3 {
     /// Horizontal component.
@@ -465,6 +470,19 @@ impl PartialEq for Vec3 {
     }
 }
 
+/// Compares two vectors by their squared length (`x² + y² + z²`).
+/// This means `v1 < v2` is true when `v1` is *shorter* than `v2`, regardless
+/// of direction. It does **not** perform a component-wise or lexicographic
+/// comparison.
+///
+/// # Example
+/// ```
+/// use mayth::vec::Vec3;
+///
+/// let short = Vec3::new(1.0, 0.0, 0.0);
+/// let long  = Vec3::new(3.0, 0.0, 0.0);
+/// assert!(short < long);
+/// ```
 impl PartialOrd for Vec3 {
     fn lt(&self, other: &Self) -> bool {
         self.length_square() < other.length_square()

@@ -10,3 +10,11 @@ keywords = ["math", "vector", "matrix", "gamedev"]
 categories = ["mathematics", "game-development"]
 
 [dependencies]
+bytemuck = { version = "1.25.0", optional = true, features = ["derive"] }
+serde = { version = "1.0.228", optional = true, features = ["derive"] }
+
+[features]
+default = []
+
+bytemuck = ["dep:bytemuck"]
+serde = ["dep:serde"]

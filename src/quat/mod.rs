@@ -1,6 +1,11 @@
 use crate::{angle::Radians, vec::Vec3};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
+#[repr(C)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Quat {
     w: f32,

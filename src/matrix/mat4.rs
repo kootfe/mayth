@@ -2,22 +2,44 @@ use std::ops::{
     Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign,
 };
 
+
 use crate::simd::*;
 use crate::{angle::Radians, vec::Vec3};
 
+#[cfg(feature = "bytemuck")]
+use bytemuck::{Pod, Zeroable};
+
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
+
 #[repr(C)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "bytemuck", derive(Pod, Zeroable))]
 #[derive(Clone, Copy, Debug)]
 pub struct Matrix4 {
     pub cols: [[f32; 4]; 4],
 }
 
 impl Matrix4 {
+    #[cfg(not(feature = "bytemuck"))]
     fn as_flat(&self) -> &[f32] {
         unsafe { std::slice::from_raw_parts(self.cols.as_ptr() as *const f32, 16) }
     }
 
+    #[cfg(not(feature = "bytemuck"))]
     fn as_flat_mut(&mut self) -> &mut [f32] {
         unsafe { std::slice::from_raw_parts_mut(self.cols.as_mut_ptr() as *mut f32, 16) }
+    }
+
+    #[cfg(feature = "bytemuck")]
+    fn as_flat(&self) -> &[f32] {
+        bytemuck::cast_slice(&self.cols)
+    }
+
+    #[cfg(feature = "bytemuck")]
+    fn as_flat_mut(&mut self) -> &mut [f32] {
+        bytemuck::cast_slice_mut(&mut self.cols)
     }
 
     pub const IDENTITY: Matrix4 = Matrix4 {
@@ -105,22 +127,6 @@ impl Matrix4 {
         tmp[2][2] = t * z * z + c;
 
         tmp
-    }
-
-    fn mul_impl(a: &Matrix4, b: &Matrix4) -> Matrix4 {
-        let mut out = Matrix4 {
-            cols: [[0.0; 4]; 4],
-        };
-        for c in 0..4 {
-            for r in 0..4 {
-                let mut sum = 0.0;
-                for k in 0..4 {
-                    sum += a.cols[k][r] * b.cols[c][k];
-                }
-                out.cols[c][r] = sum;
-            }
-        }
-        out
     }
 }
 
