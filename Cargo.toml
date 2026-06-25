@@ -1,6 +1,6 @@
 [package]
 name = "mayth"
-version = "0.0.1-alpha.4"
+version = "0.0.1-alpha.5"
 description = "A general-purpose math library for Rust."
 license = "MIT"
 edition = "2024"
