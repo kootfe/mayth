@@ -17,7 +17,7 @@ or
 
 ```toml
 [dependencies]
-mayth = "0.0.1-alpha.5"
+mayth = "0.0.1-alpha.6"
 ```
 
 ## Example
