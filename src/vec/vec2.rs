@@ -21,11 +21,15 @@ use crate::angle::Radians;
 #[cfg(feature = "serde")]
 use serde::{Serialize, Deserialize};
 
+#[cfg(feature = "bytemuck")]
+use bytemuck::{Pod, Zeroable};
+
 /// A 2-D vector with `f32` components.
 ///
 /// Implements component-wise arithmetic with other [`Vec2`] values and
 /// uniform scaling by `f32`, in all reference combinations.
 #[repr(C)]
+#[cfg_attr(feature = "bytemuck", derive(Pod, Zeroable))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vec2 {

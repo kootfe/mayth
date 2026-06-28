@@ -1,3 +1,6 @@
+# v0.0.1-alpha.6
+- Added: optional `bytemuck` feature for `Pod`/`Zeroable` support on `Vec2` and `Vec3`.
+
 # v0.0.1-alpha.5
 - **Breaking:** `Vec2` is now `#[repr(C)]` (C-compatible layout guaranteed)
 - **Breaking:** `Vec3` is now `#[repr(C)]` (C-compatible layout guaranteed)
